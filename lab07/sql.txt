@@ -1,0 +1,141 @@
+﻿Ex 1: Create DB and tables
+
+create table student (
+student_id integer primary key not null,
+name varchar(10) not null,
+year tinyint not null default 1,
+dept_no integer not null,
+major varchar(20)
+);
+
+create table department (
+dept_no integer primary key not null auto_increment,
+dept_name varchar(20) not null unique,
+office varchar(20) not null,
+office_tel varchar(13)
+);
+
+alter table `student` change `major` `major` varchar(30);
+alter table student add gender varchar(10);
+alter table student drop column gender;
+
+Ex 2: Insert data
+
+INSERT INTO student VALUES (20070002, '송은이', 3, 4, '경영학') ;
+INSERT INTO student VALUES (20060001, '박미선', 4, 4, '경영학') ;
+INSERT INTO student VALUES (20030001, '이경규', 4, 2, '전자공학') ;
+INSERT INTO student VALUES (20040003, '김용만', 3, 2, '전자공학') ;
+INSERT INTO student VALUES (20060002, '김국진', 3, 1, '컴퓨터공학') ;
+INSERT INTO student VALUES (20100002, '한선화', 3, 4, '경영학') ;
+INSERT INTO student VALUES (20110001, '송지은', 2, 1, '컴퓨터공학') ;
+INSERT INTO student VALUES (20080003, '전효성', 4, 3, '법학') ;
+INSERT INTO student VALUES (20040002, '김구라', 4, 5, '영문학') ;
+INSERT INTO student VALUES (20070001, '김숙', 4, 4, '경영학') ;
+INSERT INTO student VALUES (20100001, '황광희', 3, 4, '경영학') ;
+INSERT INTO student VALUES (20110002, '권지용', 2, 1, '전자공학') ;
+INSERT INTO student VALUES (20030002, '김재진', 5, 1, '컴퓨터공학') ;
+INSERT INTO student VALUES (20070003, '신봉선', 4, 3, '법학') ;
+INSERT INTO student VALUES (20070005, '김신영', 2, 5, '영문학') ;
+INSERT INTO student VALUES (20100003, '임시환', 3, 1, '컴퓨터공학') ;
+INSERT INTO student VALUES (20070007, '정준하', 2, 4, '경영학');
+
+INSERT INTO department (dept_name, office, office_tel) VALUES ('컴퓨터공학', '이학관 101호', '02-3290-0123'), ('전자공학', '공학관 401호', '02-3290-2345'), ('법학', '법학관 201호', '02-3290-7896'), ('경영학', '경영관 104호', '02-3290-1112'), ('영문학', '문화관 303호', '02-3290-4412');
+
+Ex 3: Update & delete data
+
+1)
+update student SET major='전자전기공학' WHERE major='전자공학';
+update department SET dept_name='전자전기공학' WHERE dept_name='전자공학';
+2)
+INSERT into department (dept_name, office, office_tel) values ('특수교육학과', '공학관 403호', '02-3290-2347');
+3)
+update student SET major='특수교육학과', dept_no=6 WHERE name='송지은';
+4)
+delete from student where name='권지용';
+5)
+delete from student where name='김재진';
+
+Ex 4: Query data
+
+1)
+select * from student where major='컴퓨터공학';
+2)
+select student_id, year, major from student;
+3)
+select * from student where year = 3;
+4)
+select * from student where year <= 2;
+5)
+select * from student where dept_no = (select dept_no from department where dept_name='경영학');
+
+Ex 5: Advanced query
+
+1)
+select * from student where student_id like "%2007%";
+2)
+select * from student order by student_id;
+3)
+select major
+from student
+group by major
+having avg(year) > 3;
+4)
+select * from student where student_id like "2007%" and major='경영학' limit 2;
+
+Ex 6: Multi-table query - imdb DB
+
+1)
+select role from movies m join roles r on m.id=r.movie_id where name='Pi';
+2)
+select first_name, last_name from actors a join (movies m join roles on id=movie_id) on actor_id=a.id where m.name='Pi';
+3)
+select first_name, last_name
+from actors a join (movies m join roles on id=movie_id) on actor_id=a.id
+where m.name='Kill Bill: Vol. 1'
+and (first_name, last_name) in
+(select first_name, last_name from actors a join (movies m join roles on id=movie_id) on actor_id=a.id where m.name='Kill Bill: Vol. 2');
+4)
+select first_name, last_name, count(movie_id)
+from actors join roles on id=actor_id
+group by actor_id
+order by count(actor_id) desc
+limit 7;
+5)
+select genre
+from movies_genres
+group by genre
+order by count(genre) desc
+limit 3;
+6)
+select first_name, last_name, genre, count(director_id)
+from directors
+join movies_directors md on id=director_id
+join movies_genres mg on md.movie_id=mg.movie_id
+where genre='Thriller'
+group by director_id
+order by count(director_id) desc
+limit 1;
+
+Ex 7: Multi-table  query - simpsons DB
+
+1)
+select grade
+from grades join courses on course_id = id
+where name = 'Computer Science 143';
+2)
+select s.name, grade
+from students s join grades on s.id=student_id
+join courses c on c.id = course_id
+where c.name = 'Computer Science 143'
+and grade <= 'B-';
+3)
+select s.name, c.name, grade
+from students s join grades on s.id=student_id
+join courses c on c.id= course_id
+where grade <= 'B-';
+4)
+select name
+from courses
+join grades on id=course_id
+group by course_id
+having count(student_id) >= 2;
